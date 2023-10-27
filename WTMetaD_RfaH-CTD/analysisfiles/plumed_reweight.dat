@@ -1,0 +1,13 @@
+rmsd_A: READ FILE=./COLVAR VALUES=rmsd_A IGNORE_TIME
+rmsd_B: READ FILE=./COLVAR VALUES=rmsd_B IGNORE_TIME
+bs: READ FILE=./COLVAR VALUES=metad.bias IGNORE_TIME
+# Use the metadynamics bias as argument
+as: REWEIGHT_BIAS ARG=bs.bias TEMP=298.15
+# Calculate histograms of rmsd_A and rmsd_B every 1 step
+# using the weights obtained from the metadynamics bias potentials (umbrella-sampling-like reweighting)
+# Look at the manual to understand the parameters of the HISTOGRAM action!
+hhrmsd: HISTOGRAM ARG=rmsd_A,rmsd_B STRIDE=1 GRID_MIN=0.0,0.0 GRID_MAX=5.0,5.0 GRID_BIN=250,250 BANDWIDTH=0.0125,0.0125 LOGWEIGHTS=as 
+# Convert histograms h(s) to free energies F(s) = -kBT * log(h(s))
+ffrmsd: CONVERT_TO_FES GRID=hhrmsd TEMP=298.15
+# Print out the free energies F(s) to file once the entire trajectory is processed
+DUMPGRID GRID=ffrmsd FILE=ffrmsd.dat 

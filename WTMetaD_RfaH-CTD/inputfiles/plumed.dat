@@ -1,0 +1,7 @@
+# define CVs - RMSDs from the two reference conformations
+rmsd_A: RMSD REFERENCE=state_A-Ca.pdb TYPE=OPTIMAL
+rmsd_B: RMSD REFERENCE=state_B-Ca.pdb TYPE=OPTIMAL
+# 2D metadynamics
+metad: METAD ARG=rmsd_A,rmsd_B PACE=500 HEIGHT=1.2 BIASFACTOR=60 SIGMA=0.05,0.05 FILE=HILLS GRID_MIN=0.0,0.0 GRID_MAX=5.0,5.0
+# print info to COLVAR
+PRINT ARG=rmsd_A,rmsd_B,metad.bias FILE=COLVAR STRIDE=500  
